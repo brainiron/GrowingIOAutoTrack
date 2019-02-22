@@ -23,7 +23,7 @@ name,description,key,cstm_cn,type_cv,type
 订单结算,点击Check Out时触发,checkOut,"商品ID、
 商品名称、
 购买数量、
-总计金额",计数器,counter
+支付金额",计数器,counter
 订单支付,"支付订单次数。
 用户点击订单支付时触发，一个订单发送一次事件。",payOrder,"订单ID、
 购买数量、

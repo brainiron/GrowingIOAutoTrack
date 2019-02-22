@@ -40,9 +40,8 @@ def getToken():
     print('返回 token 啦 -> '+ tokenReturn['code'])
     return tokenReturn['code']
 
-# 公钥、token
 headerEvents = {'X-Client-Id':publicKey,'Authorization':getToken()}
-print("header -> "+str(headerEvents))
+print(headerEvents)
 
 def events():
     """创建事件级变量"""
@@ -74,36 +73,53 @@ def getCstmEventsVariable():
 def cstmEvents():
     """创建打点事件"""
     eventsUrl = 'https://www.growingio.com/v1/api/projects/{}/dim/events'.format(project_uid)
-    listEvents = {}
+    dictEvents = {}
     with open('getEvents.csv') as file:
         events = pd.read_csv(file,encoding = "utf_8",index_col=0)
         for index,row in events.iterrows():
-            listEvents[row['name']] = {"key": row['key'],"id": row['id'], "name": row['name']}
-
-        print(listEvents)
+            dictEvents[row['name']] = {"key": row['key'],"id": row['id'], "type": row['type'],"name": row['name']}
 
     with open('cstmEvents.csv') as file:
         trackFile = pd.read_csv(file,encoding = "utf_8",index_col=0)
         for index,row in trackFile.iterrows():
-            var = print(row['cstm_cn'].split("、"))
-            attrs = {}
+            var = row['cstm_cn'].split("、")
+            attrs = []
             for key in var:
-                attrs += listEvents[key]
-
-            cstmData={
+                key = key.strip()
+                if key != '':
+                    attrs.append(dictEvents[key])
+            cstmData=[
+                {
                 'attrs':attrs,
                 'type':row['type'],
                 'description':row['description'],
                 'name':index,
-                'key':row['key']
+                'key':row['key'].strip()
                 }
+            ]
             
-            print(cstmData)
-            # r = req.post(eventsUrl,headers=headerEvents,json=cstmData)
-            # print(r.text)
-            # print(r.status_code)
+            print(json.dumps(cstmData))
+            r = req.post(eventsUrl,headers=headerEvents,json=cstmData)
+            if r.status_code != 200 :
+                print(r.text)
+
+def pvarEvents():
+    """创建页面级变量"""
+    pvarUrl = 'https://www.growingio.com/v1/api/projects/{}/vars/pages'.format(project_uid)
+    with open('pvarEvents.csv') as file:
+        trackFile = pd.read_csv(file,encoding = "utf_8",index_col=0)
+        for index,row in trackFile.iterrows():
+            pvarData = {
+                'description':row['description'],
+                'name':row['name'],
+                'key':row['key']
+            }
+            r = req.post(pvarUrl,headers=headerEvents,json=pvarData)
+            print(r.text)
+
 
   
 # events()
 # getCstmEventsVariable()
-cstmEvents()
+# cstmEvents()
+pvarEvents()
