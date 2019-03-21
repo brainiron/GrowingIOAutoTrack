@@ -1,4 +1,4 @@
-name,description,key,cstm_cn,type_cv,type
+name,描述,标识符,事件级变量,类型,type
 首页商品曝光,首页商品曝光次数,homePageGoodsImp,"商品ID、
 商品名称、
 流量位",计数器,counter
